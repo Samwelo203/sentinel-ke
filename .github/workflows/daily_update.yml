@@ -1,35 +1,23 @@
-name: SENTINEL-KE Daily Data Update
+name: SENTINEL-KE Daily Update
 
 on:
   schedule:
-    # Runs every day at 6 AM Kenya Time (3 AM UTC)
-    - cron: '3 3 * * *'
-  workflow_dispatch:  # Allows manual trigger from GitHub
+    - cron: '0 3 * * *'
+  workflow_dispatch:
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.10'
-    
-    - name: Install dependencies
-      run: |
-        pip install pandas numpy requests
-    
-    - name: Run data update
-      run: python auto_update.py
-    
-    - name: Commit and push changes
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+    - run: pip install pandas numpy requests
+    - run: python auto_update.py
+    - run: |
+        git config user.email "action@github.com"
+        git config user.name "GitHub Action"
         git add data/
-        git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update: $(date '+%Y-%m-%d %H:%M')"
+        git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update data"
         git push
