@@ -1,0 +1,25 @@
+cholera_lag_3
+cholera_lag_5
+cholera_lag_7
+malaria_lag_3
+malaria_lag_5
+malaria_lag_7
+rainfall_mm
+rain_7day_avg
+rain_7day_lag
+rain_14day_lag
+rain_21day_lag
+week_of_year
+month
+is_rainy_season
+cholera_missing
+malaria_missing
+report_delay_days
+cholera_rate_per_100k
+population
+county_Homa Bay
+county_Kisii
+county_Kisumu
+county_Migori
+county_Nyamira
+county_Siaya
