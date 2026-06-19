@@ -1,7 +1,7 @@
-county,date,risk_score,rainfall_7day,rainfall_14day,alert
-Kisumu,2026-06-19,0.1,4.1,7.3,False
-Homa Bay,2026-06-19,0.05,0.4,5.8,False
-Siaya,2026-06-19,0.214,7.0,18.9,False
-Migori,2026-06-19,0.052,2.0,4.0,False
-Nyamira,2026-06-19,0.05,2.3,2.9,False
-Kisii,2026-06-19,0.083,4.1,4.8,False
+county,date,risk_score,alert,ai_prediction
+Kisumu,2026-06-19,0.99,True,True
+Homa Bay,2026-06-19,0.988,True,True
+Siaya,2026-06-19,0.977,True,True
+Migori,2026-06-19,0.988,True,True
+Nyamira,2026-06-19,0.995,True,True
+Kisii,2026-06-19,0.996,True,True
