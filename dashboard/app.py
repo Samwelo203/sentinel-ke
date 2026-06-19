@@ -92,7 +92,6 @@ st.markdown("---")
 
 # Alert banner
 if alert_count > 0:
-    alert_counties = df[df['alert'] == True]['county'].tolist()
     st.markdown(f"""
     <div class="alert-box">
         🚨 ACTIVE ALERTS: {', '.join(alert_counties)}<br>
