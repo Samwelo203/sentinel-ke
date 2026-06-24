@@ -1,7 +1,7 @@
-county,date,risk_score,alert,ai_prediction
-Kisumu,2026-06-22,0.974,True,True
-Homa Bay,2026-06-22,0.978,True,True
-Siaya,2026-06-22,0.714,True,True
-Migori,2026-06-22,0.955,True,True
-Nyamira,2026-06-22,0.987,True,True
-Kisii,2026-06-22,0.996,True,True
+county,date,risk_score,alert,rainfall_risk,environmental_risk,wash_risk,mobility_risk,capacity_risk,data_quality_score
+Kisumu,2026-06-24,0.363,False,0.05,0.77,0.401,0.607,0.25,1
+Homa Bay,2026-06-24,0.399,False,0.05,0.979,0.452,0.453,0.32,1
+Siaya,2026-06-24,0.313,False,0.05,0.571,0.48,0.333,0.4,1
+Migori,2026-06-24,0.383,False,0.05,0.953,0.432,0.39,0.35,1
+Nyamira,2026-06-24,0.285,False,0.05,0.811,0.295,0.153,0.28,1
+Kisii,2026-06-24,0.316,False,0.05,0.865,0.323,0.24,0.3,1
