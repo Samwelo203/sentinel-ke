@@ -26,6 +26,16 @@ from auth import (
     get_role_badge, list_users, create_user, update_user_role, delete_user
 )
 
+# ============================================
+# REPORT GENERATION
+# ============================================
+
+from reports import (
+    generate_outbreak_risk_report,
+    generate_summary_report,
+    generate_comparative_report
+)
+
 # Initialize session state if not already done
 if "session" not in st.session_state:
     st.session_state.session = None
@@ -550,6 +560,149 @@ if not county_data.empty:
         <p>{explanation}</p>
     </div>
     """, unsafe_allow_html=True)
+
+st.markdown("---")
+
+# ============================================
+# SECTION 5.5: REPORT GENERATION & DOWNLOAD
+# ============================================
+
+# Check if user has permission to generate reports
+session = st.session_state.session
+if can_generate_reports(session) or can_manage_users(session):
+    st.subheader("📄 Generate & Download Reports")
+    st.info("Generate PDF reports for outbreak risk assessment, surveillance, and planning.")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        report_type = st.selectbox(
+            "Select Report Type",
+            ["Comprehensive Assessment", "Quick Summary", "County Comparison"],
+            help="Choose the type of PDF report to generate"
+        )
+    
+    with col2:
+        if report_type == "Comprehensive Assessment":
+            if st.button("📊 Generate Report", use_container_width=True, key="gen_comp"):
+                with st.spinner("Generating comprehensive report..."):
+                    try:
+                        pdf_buffer = generate_outbreak_risk_report(
+                            df_predictions, 
+                            df_historical, 
+                            selected_county,
+                            session['role'],
+                            alert_threshold
+                        )
+                        
+                        st.success("✅ Report generated successfully!")
+                        
+                        st.download_button(
+                            label="📥 Download PDF",
+                            data=pdf_buffer,
+                            file_name=f"SENTINEL-KE_Comprehensive_{selected_county}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                            mime="application/pdf",
+                            use_container_width=True,
+                            key="download_comp"
+                        )
+                    except Exception as e:
+                        st.error(f"❌ Error generating report: {str(e)}")
+        
+        elif report_type == "Quick Summary":
+            if st.button("📄 Generate Report", use_container_width=True, key="gen_summary"):
+                with st.spinner("Generating quick summary report..."):
+                    try:
+                        pdf_buffer = generate_summary_report(
+                            df_predictions,
+                            selected_county,
+                            session['role']
+                        )
+                        
+                        st.success("✅ Report generated successfully!")
+                        
+                        st.download_button(
+                            label="📥 Download PDF",
+                            data=pdf_buffer,
+                            file_name=f"SENTINEL-KE_Summary_{selected_county}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                            mime="application/pdf",
+                            use_container_width=True,
+                            key="download_summary"
+                        )
+                    except Exception as e:
+                        st.error(f"❌ Error generating report: {str(e)}")
+        
+        else:  # County Comparison
+            if st.button("🗺️ Generate Report", use_container_width=True, key="gen_comp_counties"):
+                with st.spinner("Generating county comparison report..."):
+                    try:
+                        pdf_buffer = generate_comparative_report(
+                            df_predictions,
+                            session['role']
+                        )
+                        
+                        st.success("✅ Report generated successfully!")
+                        
+                        st.download_button(
+                            label="📥 Download PDF",
+                            data=pdf_buffer,
+                            file_name=f"SENTINEL-KE_Comparison_AllCounties_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                            mime="application/pdf",
+                            use_container_width=True,
+                            key="download_comp_counties"
+                        )
+                    except Exception as e:
+                        st.error(f"❌ Error generating report: {str(e)}")
+    
+    with col3:
+        st.markdown("")  # Spacer
+        
+        if st.button("ℹ️ Report Info", use_container_width=True, key="report_info"):
+            st.info("""
+            **Report Types:**
+            - **Comprehensive**: Full assessment with domain breakdown, historical trends, and recommendations
+            - **Quick Summary**: One-page overview with key findings and immediate recommendations
+            - **County Comparison**: Comparison of all counties' risk scores and status
+            
+            **Who can access:**
+            - 👑 Administrators
+            - 📊 Health Officers
+            
+            **Report Contents:**
+            - Executive summary with key metrics
+            - Multi-domain risk analysis
+            - Historical trends and patterns
+            - Recommended actions
+            - AI model information
+            """)
+    
+    # Report generation history
+    with st.expander("📋 Report Generation Guidelines"):
+        st.markdown("""
+        **When to generate reports:**
+        - Daily for high-risk counties (risk > 0.65)
+        - Weekly for moderate-risk counties (risk 0.4-0.65)
+        - Monthly for low-risk areas (risk < 0.4)
+        - After major updates to surveillance data
+        - For inter-agency coordination meetings
+        
+        **Report Usage:**
+        - Share with district health officers
+        - Present to emergency response committees
+        - Include in weekly epidemiological bulletins
+        - Archive for audit and compliance purposes
+        - Use for resource allocation planning
+        
+        **Data Privacy:**
+        - Reports contain aggregated data only
+        - No individual patient information
+        - Authorized personnel only
+        - Secure transmission recommended
+        """)
+    
+    st.markdown("---")
+
+else:
+    st.warning("⚠️ Report generation is only available to Administrators and Health Officers. Contact your administrator for access.")
 
 st.markdown("---")
 
