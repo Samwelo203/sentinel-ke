@@ -61,7 +61,7 @@ def render_login_screen():
     """Render the login interface."""
     st.markdown("""
     <div style="text-align: center; padding: 3rem 0;">
-        <h1>■ SENTINEL-KE</h1>
+        <h1>🛡️ SENTINEL-KE</h1>
         <h3>AI-Powered Early Warning System for Western Kenya</h3>
         <hr style="margin: 2rem 0;">
     </div>
@@ -166,7 +166,7 @@ elif st.session_state.show_admin_panel and not can_manage_users(st.session_state
 
 st.set_page_config(
     page_title="SENTINEL-KE | Early Warning System",
-    page_icon="🛰️",
+    page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -277,7 +277,7 @@ with st.sidebar:
 # HEADER
 # ============================================
 
-st.markdown('<div class="main-header">■ SENTINEL-KE</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">🛡️ SENTINEL-KE</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">AI-Powered Early Warning System for Western Kenya</div>', unsafe_allow_html=True)
 
 # ============================================
@@ -357,7 +357,7 @@ st.markdown("---")
 # SECTION 2: DOMAIN BREAKDOWN (NEW!)
 # ============================================
 
-st.subheader("📊 Multi-Domain Risk Breakdown")
+st.subheader("Multi-Domain Risk Breakdown")
 
 # Check if domain columns exist
 domain_columns = ['rainfall_risk', 'environmental_risk', 'wash_risk', 'mobility_risk', 'capacity_risk', 'data_quality_score']
@@ -460,7 +460,7 @@ st.markdown("---")
 # SECTION 3: HISTORICAL TRENDS
 # ============================================
 
-st.subheader(f"📈 Historical Trends for {selected_county}")
+st.subheader(f"Historical Trends for {selected_county}")
 
 if df_historical is not None:
     county_hist = df_historical[df_historical['county'] == selected_county]
@@ -499,7 +499,7 @@ st.markdown("---")
 # SECTION 4: COUNTY COMPARISON
 # ============================================
 
-st.subheader("🏙️ County Comparison")
+st.subheader("County Comparison")
 
 if df_predictions is not None:
     fig = px.bar(
@@ -835,15 +835,15 @@ st.markdown(f'''
     <strong>\u25a0 SENTINEL-KE v1.0</strong><br>
     AI-Powered Environmental Early Warning System for Western Kenya<br>
     <br>
-    📊 Data updated: {format_eat_datetime(get_eat_time(), "%Y-%m-%d %H:%M:%S")} EAT<br>
-    🔄 Next update: Daily at 6:00 AM EAT<br>
+    Data updated: {format_eat_datetime(get_eat_time(), "%Y-%m-%d %H:%M:%S")} EAT<br>
+    Next update: Daily at 6:00 AM EAT<br>
     <br>
-    📌 <strong>Data Sources:</strong> Open-Meteo API, CHIRPS, WorldPop<br>
-    🤖 <strong>AI Model:</strong> XGBoost with 25 features<br>
-    🏙️ <strong>Counties:</strong> Kisumu, Homa Bay, Siaya, Migori, Nyamira, Kisii<br>
+    <strong>Data Sources:</strong> Open-Meteo API, CHIRPS, WorldPop<br>
+    <strong>AI Model:</strong> XGBoost with 25 features<br>
+    <strong>Counties:</strong> Kisumu, Homa Bay, Siaya, Migori, Nyamira, Kisii<br>
     <br>
-    🔐 <strong>Access Control:</strong> Role-based authentication enabled<br>
-    📋 <strong>User Role:</strong> {st.session_state.session["role"]}<br>
+    <strong>Access Control:</strong> Role-based authentication enabled<br>
+    <strong>User Role:</strong> {st.session_state.session["role"]}<br>
     <br>
     For health officials only. Not for clinical decision-making.<br>
     © 2026 SENTINEL-KE Project
@@ -854,7 +854,7 @@ st.markdown(f'''
 # AUTO-REFRESH
 # ============================================
 
-if st.sidebar.checkbox("🔄 Auto-refresh", value=True):
+if st.sidebar.checkbox("Auto-refresh", value=True):
     st.caption("Dashboard auto-refreshes every 5 minutes")
     st.empty()
     import time
