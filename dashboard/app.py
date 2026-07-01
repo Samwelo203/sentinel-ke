@@ -61,7 +61,7 @@ def render_login_screen():
     """Render the login interface."""
     st.markdown("""
     <div style="text-align: center; padding: 3rem 0;">
-        <h1>🛡️ SENTINEL-KE</h1>
+        <h1>■ SENTINEL-KE</h1>
         <h3>AI-Powered Early Warning System for Western Kenya</h3>
         <hr style="margin: 2rem 0;">
     </div>
@@ -76,7 +76,7 @@ def render_login_screen():
         
         if st.button("Login", use_container_width=True, type="primary"):
             if not username or not password:
-                st.error("❌ Please enter both username and password")
+                st.error("⛔ Please enter both username and password")
             else:
                 success, user_info, message = authenticate_user(username, password)
                 if success:
@@ -89,15 +89,15 @@ def render_login_screen():
         
         st.markdown("---")
         st.markdown("""
-        ### 📋 Default Test Credentials
+        ### ■ Default Test Credentials
         
         | Role | Username | Password |
         |------|----------|----------|
-        | 👑 Administrator | admin | admin |
-        | 📊 Health Officer | health_officer | password |
-        | 👁️ Viewer | viewer | viewer |
+        | ★ Administrator | admin | admin |
+        | ◆ Health Officer | health_officer | password |
+        | ● Viewer | viewer | viewer |
         """)
-        st.info("⚠️ Update these credentials immediately in production!")
+        st.info("⚠ Update these credentials immediately in production!")
 
 
 def render_logout_and_session_info():
@@ -105,7 +105,7 @@ def render_logout_and_session_info():
     if st.session_state.session:
         with st.sidebar:
             st.markdown("---")
-            st.markdown("### 👤 User Session")
+            st.markdown("### ▤ User Session")
             session = st.session_state.session
             badge = get_role_badge(session["role_level"], session["role"])
             
@@ -114,13 +114,13 @@ def render_logout_and_session_info():
                 st.write(f"**User:** {session['username']}")
                 st.write(f"**Role:** {badge}")
             
-            st.caption(f"🕐 **Time (EAT):** {format_eat_datetime(get_eat_time(), '%H:%M:%S')}")
+            st.caption(f"⏰ **Time (EAT):** {format_eat_datetime(get_eat_time(), '%H:%M:%S')}")
             
             time_remaining = get_session_time_remaining(session)
             if time_remaining > 0:
-                st.caption(f"⏱️ Session expires in: {time_remaining} min")
+                st.caption(f"⧗ Session expires in: {time_remaining} min")
             else:
-                st.error("❌ Session expired. Please login again.")
+                st.error("✗ Session expired. Please login again.")
                 st.session_state.session = None
                 st.session_state.show_login = True
                 st.rerun()
@@ -128,16 +128,16 @@ def render_logout_and_session_info():
             # Admin panel button
             if can_manage_users(session):
                 st.markdown("---")
-                st.markdown("### ⚙️ Administration")
-                if st.button("👨‍💼 Admin Panel", use_container_width=True, type="primary", key="btn_admin_panel"):
+                st.markdown("### ⚙ Administration")
+                if st.button("★ Admin Panel", use_container_width=True, type="primary", key="btn_admin_panel"):
                     st.session_state.show_admin_panel = True
                     st.rerun()
             
             st.markdown("---")
-            if st.button("🚪 Logout", use_container_width=True):
+            if st.button("← Logout", use_container_width=True):
                 st.session_state.session = None
                 st.session_state.show_login = True
-                st.info("✅ You have been logged out.")
+                st.info("✓ You have been logged out.")
                 st.rerun()
 
 # Check authentication
@@ -156,7 +156,7 @@ if st.session_state.show_admin_panel and can_manage_users(st.session_state.sessi
     render_admin_dashboard(st.session_state.session)
     st.stop()
 elif st.session_state.show_admin_panel and not can_manage_users(st.session_state.session):
-    st.error("❌ Unauthorized: You do not have permission to access the admin panel")
+    st.error("✗ Unauthorized: You do not have permission to access the admin panel")
     st.session_state.show_admin_panel = False
     st.rerun()
 
@@ -166,7 +166,7 @@ elif st.session_state.show_admin_panel and not can_manage_users(st.session_state
 
 st.set_page_config(
     page_title="SENTINEL-KE | Early Warning System",
-    page_icon="🛡️",
+    page_icon="■",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -242,7 +242,7 @@ render_logout_and_session_info()
 
 with st.sidebar:
     st.markdown("---")
-    st.markdown("### 📍 Controls")
+    st.markdown("### ⋮ Controls")
     
     counties = ['Kisumu', 'Homa Bay', 'Siaya', 'Migori', 'Nyamira', 'Kisii']
     selected_county = st.selectbox("Select County", counties, index=0)
@@ -256,20 +256,20 @@ with st.sidebar:
     alert_threshold = st.slider("Alert Threshold", 0.3, 0.8, 0.65, 0.05)
     
     st.markdown("---")
-    st.markdown("### 📊 System Status")
+    st.markdown("### ≡ System Status")
     st.info("""
-    ✅ **AI Model:** Active  
-    ✅ **Data Source:** Open-Meteo API  
-    ✅ **Updates:** Daily at 6 AM EAT  
-    ✅ **Counties:** 6 monitored  
+    ✓ **AI Model:** Active  
+    ✓ **Data Source:** Open-Meteo API  
+    ✓ **Updates:** Daily at 6 AM EAT  
+    ✓ **Counties:** 6 monitored  
     """)
     
     st.markdown("---")
-    st.markdown("### 🔒 Data Protection")
+    st.markdown("### � Data Protection")
     st.caption("""
-    ✅ Kenya Data Protection Act (2019)  
-    ✅ GDPR Principles  
-    ✅ Health Data Privacy  
+    ✓ Kenya Data Protection Act (2019)  
+    ✓ GDPR Principles  
+    ✓ Health Data Privacy  
     🔐 All access is logged
     """)
 
@@ -277,7 +277,7 @@ with st.sidebar:
 # HEADER
 # ============================================
 
-st.markdown('<div class="main-header">🛡️ SENTINEL-KE</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">■ SENTINEL-KE</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">AI-Powered Early Warning System for Western Kenya</div>', unsafe_allow_html=True)
 
 # ============================================
@@ -286,7 +286,7 @@ st.markdown('<div class="sub-header">AI-Powered Early Warning System for Western
 
 if df_predictions is None:
     st.warning("""
-    ⏳ **No prediction data available yet**
+    ⧗ **No prediction data available yet**
     
     The system hasn't generated predictions. This is normal for first run.
     
@@ -301,7 +301,7 @@ if df_predictions is None:
 # SECTION 1: CURRENT STATUS
 # ============================================
 
-st.subheader("📊 Current Status Dashboard")
+st.subheader("≡ Current Status Dashboard")
 
 county_data = df_predictions[df_predictions['county'] == selected_county]
 
@@ -312,21 +312,21 @@ if not county_data.empty:
     if alert_status:
         st.markdown(f'''
         <div class="alert-box-critical">
-            🚨 CRITICAL ALERT: {selected_county} County<br>
+            ▲▲ CRITICAL ALERT: {selected_county} County<br>
             Current Risk Score: {risk_score:.1%}
         </div>
         ''', unsafe_allow_html=True)
     elif risk_score > 0.4:
         st.markdown(f'''
         <div class="alert-box-warning">
-            ⚠️ MODERATE RISK: {selected_county} County<br>
+            ▲ MODERATE RISK: {selected_county} County<br>
             Current Risk Score: {risk_score:.1%}
         </div>
         ''', unsafe_allow_html=True)
     else:
         st.markdown(f'''
         <div class="alert-box-safe">
-            ✅ NORMAL: {selected_county} County<br>
+            ✓ NORMAL: {selected_county} County<br>
             Current Risk Score: {risk_score:.1%}
         </div>
         ''', unsafe_allow_html=True)
@@ -337,7 +337,7 @@ if not county_data.empty:
     with col1:
         st.metric("Current Risk Score", f"{risk_score:.1%}")
     with col2:
-        st.metric("Alert Status", "🚨 ALERT" if alert_status else "✅ NORMAL")
+        st.metric("Alert Status", "▲▲ ALERT" if alert_status else "✓ NORMAL")
     with col3:
         if df_historical is not None:
             county_hist = df_historical[df_historical['county'] == selected_county]
@@ -407,30 +407,30 @@ if has_domains and not county_data.empty:
         
         with col1:
             st.markdown(f"""
-            **🌧️ Rainfall Risk:** {county_data['rainfall_risk'].iloc[0]:.1%}
+            **≈ Rainfall Risk:** {county_data['rainfall_risk'].iloc[0]:.1%}
             - Based on 14-day rainfall patterns
             - Higher rainfall = higher waterborne disease risk
             
-            **🌿 Environmental Risk (NDVI):** {county_data['environmental_risk'].iloc[0]:.1%}
+            **≈ Environmental Risk (NDVI):** {county_data['environmental_risk'].iloc[0]:.1%}
             - Vegetation density and temperature
             - Higher NDVI = more mosquito breeding sites
             
-            **💧 WASH Risk:** {county_data['wash_risk'].iloc[0]:.1%}
+            **≈ WASH Risk:** {county_data['wash_risk'].iloc[0]:.1%}
             - Water access, sanitation, hygiene
             - Poor WASH = higher cholera risk
             """)
         
         with col2:
             st.markdown(f"""
-            **🚶 Mobility Risk:** {county_data['mobility_risk'].iloc[0]:.1%}
+            **≈ Mobility Risk:** {county_data['mobility_risk'].iloc[0]:.1%}
             - Human movement and border crossings
             - Higher mobility = faster disease spread
             
-            **🏥 Capacity Risk:** {county_data['capacity_risk'].iloc[0]:.1%}
+            **≈ Capacity Risk:** {county_data['capacity_risk'].iloc[0]:.1%}
             - Health system readiness
             - Low capacity = higher outbreak impact
             
-            **📊 Data Quality:** {county_data['data_quality_score'].iloc[0]:.1%}
+            **≡ Data Quality:** {county_data['data_quality_score'].iloc[0]:.1%}
             - Reporting completeness and timeliness
             - Lower quality = lower confidence in predictions
             """)
@@ -439,17 +439,17 @@ if has_domains and not county_data.empty:
     quality_score = county_data['data_quality_score'].iloc[0]
     if quality_score < 0.6:
         st.warning(f"""
-        ⚠️ **Data Quality Alert:** Reporting completeness in {selected_county} is {quality_score:.0%}
+        ⚠ **Data Quality Alert:** Reporting completeness in {selected_county} is {quality_score:.0%}
         - Predictions may be less reliable
         - Consider enhanced surveillance
         """)
     elif quality_score < 0.8:
         st.info(f"""
-        ℹ️ **Data Quality Note:** Reporting completeness in {selected_county} is {quality_score:.0%}
+        ℹ **Data Quality Note:** Reporting completeness in {selected_county} is {quality_score:.0%}
         - Predictions have moderate confidence
         """)
     else:
-        st.success(f"✅ High data quality in {selected_county} ({quality_score:.0%})")
+        st.success(f"✓ High data quality in {selected_county} ({quality_score:.0%})")
         
 else:
     st.info("Domain breakdown data not available. Run `auto_update.py` to generate.")
@@ -602,7 +602,7 @@ st.markdown("---")
 # Check if user has permission to generate reports
 session = st.session_state.session
 if can_generate_reports(session) or can_manage_users(session):
-    st.subheader("📄 Generate & Download Reports")
+    st.subheader("≡ Generate & Download Reports")
     st.info("Generate PDF reports for outbreak risk assessment, surveillance, and planning.")
     
     col1, col2, col3 = st.columns(3)
@@ -616,7 +616,7 @@ if can_generate_reports(session) or can_manage_users(session):
     
     with col2:
         if report_type == "Comprehensive Assessment":
-            if st.button("📊 Generate Report", use_container_width=True, key="gen_comp"):
+            if st.button("≡ Generate Report", use_container_width=True, key="gen_comp"):
                 with st.spinner("Generating comprehensive report..."):
                     try:
                         pdf_buffer = generate_outbreak_risk_report(
@@ -627,10 +627,10 @@ if can_generate_reports(session) or can_manage_users(session):
                             alert_threshold
                         )
                         
-                        st.success("✅ Report generated successfully!")
+                        st.success("✓ Report generated successfully!")
                         
                         st.download_button(
-                            label="📥 Download PDF",
+                            label="⬇ Download PDF",
                             data=pdf_buffer,
                             file_name=f"SENTINEL-KE_Comprehensive_{selected_county}_{format_eat_datetime(get_eat_time(), '%Y%m%d_%H%M%S')}.pdf",
                             mime="application/pdf",
@@ -638,10 +638,10 @@ if can_generate_reports(session) or can_manage_users(session):
                             key="download_comp"
                         )
                     except Exception as e:
-                        st.error(f"❌ Error generating report: {str(e)}")
+                        st.error(f"✗ Error generating report: {str(e)}")
         
         elif report_type == "Quick Summary":
-            if st.button("📄 Generate Report", use_container_width=True, key="gen_summary"):
+            if st.button("≡ Generate Report", use_container_width=True, key="gen_summary"):
                 with st.spinner("Generating quick summary report..."):
                     try:
                         pdf_buffer = generate_summary_report(
@@ -650,10 +650,10 @@ if can_generate_reports(session) or can_manage_users(session):
                             session['role']
                         )
                         
-                        st.success("✅ Report generated successfully!")
+                        st.success("✓ Report generated successfully!")
                         
                         st.download_button(
-                            label="📥 Download PDF",
+                            label="⬇ Download PDF",
                             data=pdf_buffer,
                             file_name=f"SENTINEL-KE_Summary_{selected_county}_{format_eat_datetime(get_eat_time(), '%Y%m%d_%H%M%S')}.pdf",
                             mime="application/pdf",
@@ -661,10 +661,10 @@ if can_generate_reports(session) or can_manage_users(session):
                             key="download_summary"
                         )
                     except Exception as e:
-                        st.error(f"❌ Error generating report: {str(e)}")
+                        st.error(f"✗ Error generating report: {str(e)}")
         
         else:  # County Comparison
-            if st.button("🗺️ Generate Report", use_container_width=True, key="gen_comp_counties"):
+            if st.button("+ Generate Report", use_container_width=True, key="gen_comp_counties"):
                 with st.spinner("Generating county comparison report..."):
                     try:
                         pdf_buffer = generate_comparative_report(
@@ -672,10 +672,10 @@ if can_generate_reports(session) or can_manage_users(session):
                             session['role']
                         )
                         
-                        st.success("✅ Report generated successfully!")
+                        st.success("✓ Report generated successfully!")
                         
                         st.download_button(
-                            label="📥 Download PDF",
+                            label="⬇ Download PDF",
                             data=pdf_buffer,
                             file_name=f"SENTINEL-KE_Comparison_AllCounties_{format_eat_datetime(get_eat_time(), '%Y%m%d_%H%M%S')}.pdf",
                             mime="application/pdf",
@@ -683,12 +683,12 @@ if can_generate_reports(session) or can_manage_users(session):
                             key="download_comp_counties"
                         )
                     except Exception as e:
-                        st.error(f"❌ Error generating report: {str(e)}")
+                        st.error(f"✗ Error generating report: {str(e)}")
     
     with col3:
         st.markdown("")  # Spacer
         
-        if st.button("ℹ️ Report Info", use_container_width=True, key="report_info"):
+        if st.button("ℹ Report Info", use_container_width=True, key="report_info"):
             st.info("""
             **Report Types:**
             - **Comprehensive**: Full assessment with domain breakdown, historical trends, and recommendations
@@ -696,8 +696,8 @@ if can_generate_reports(session) or can_manage_users(session):
             - **County Comparison**: Comparison of all counties' risk scores and status
             
             **Who can access:**
-            - 👑 Administrators
-            - 📊 Health Officers
+            - ★ Administrators
+            - ◆ Health Officers
             
             **Report Contents:**
             - Executive summary with key metrics
@@ -708,7 +708,7 @@ if can_generate_reports(session) or can_manage_users(session):
             """)
     
     # Report generation history
-    with st.expander("📋 Report Generation Guidelines"):
+    with st.expander("≡ Report Generation Guidelines"):
         st.markdown("""
         **When to generate reports:**
         - Daily for high-risk counties (risk > 0.65)
@@ -734,7 +734,7 @@ if can_generate_reports(session) or can_manage_users(session):
     st.markdown("---")
 
 else:
-    st.warning("⚠️ Report generation is only available to Administrators and Health Officers. Contact your administrator for access.")
+    st.warning("⚠ Report generation is only available to Administrators and Health Officers. Contact your administrator for access.")
 
 st.markdown("---")
 
@@ -742,7 +742,7 @@ st.markdown("---")
 # SECTION 6: RECOMMENDED ACTIONS
 # ============================================
 
-st.subheader("📋 Recommended Actions")
+st.subheader("≡ Recommended Actions")
 
 if not county_data.empty:
     risk = county_data['risk_score'].iloc[0]
@@ -770,15 +770,15 @@ if not county_data.empty:
             """)
         with col2:
             st.markdown("""
-            ### 📊 Enhanced Surveillance
+            ### ≡ Enhanced Surveillance
             1. Case Reporting
             2. Laboratory Testing
             3. Data Monitoring
             """)
-        st.warning(f"⚠️ **ALERT:** Immediate action required for {selected_county} County")
+        st.warning(f"⚠ **ALERT:** Immediate action required for {selected_county} County")
     elif risk > 0.4:
         st.markdown(f"""
-        ### ⚠️ Enhanced Surveillance
+        ### ▲ Enhanced Surveillance
         1. Increase monitoring in high-risk areas
         2. Review case definitions with health workers
         3. Strengthen reporting from all facilities
@@ -788,7 +788,7 @@ if not county_data.empty:
         """)
     else:
         st.markdown("""
-        ### ✅ Routine Surveillance
+        ### ✓ Routine Surveillance
         1. Maintain standard case reporting
         2. Monitor trends for early signs
         3. Continue community health worker activities
@@ -806,33 +806,33 @@ st.subheader("🔍 Data Transparency")
 
 st.markdown("""
 <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px;">
-    <strong>✅ What This System Uses (REAL):</strong><br>
+    <strong>✓ What This System Uses (REAL):</strong><br>
     • Live rainfall data from Open-Meteo API<br>
     • Real temperature data<br>
     • Actual population estimates (WorldPop)<br>
     • XGBoost AI/ML pipeline<br>
     <br>
-    <strong>📊 All 5 Intelligence Domains Integrated:</strong><br>
-    • 🌿 Environmental Remote Sensing (NDVI)<br>
-    • 💧 WASH Intelligence (Water, Sanitation, Hygiene)<br>
-    • 📊 Data Quality Intelligence (Reporting completeness)<br>
-    • 🚶 Mobility Intelligence (Human movement)<br>
-    • 🏥 Health Capacity Intelligence (System readiness)<br>
+    <strong>\u2261 All 5 Intelligence Domains Integrated:</strong><br>
+    • \u2248 Environmental Remote Sensing (NDVI)<br>
+    • \u2248 WASH Intelligence (Water, Sanitation, Hygiene)<br>
+    • \u2261 Data Quality Intelligence (Reporting completeness)<br>
+    • \u2248 Mobility Intelligence (Human movement)<br>
+    • \u2248 Health Capacity Intelligence (System readiness)<br>
     <br>
-    <strong>⚠️ What This System Does NOT Use (SIMULATED):</strong><br>
+    <strong>\u26a0 What This System Does NOT Use (SIMULATED):</strong><br>
     • Real DHIS2 health facility reports<br>
     • Actual hospital admission records<br>
     • Lab-confirmed case data<br>
     • Real-time disease surveillance data<br>
     <br>
-    <strong>🔬 Status:</strong> Demonstrates full AI/ML engineering pipeline with 9 of 13 domains complete.<br>
+    <strong>\u27a4 Status:</strong> Demonstrates full AI/ML engineering pipeline with 9 of 13 domains complete.<br>
     Real case validation would require integration with Kenya's DHIS2 system.
 </div>
 """, unsafe_allow_html=True)
 
 st.markdown(f'''
 <div class="footer">
-    <strong>🛡️ SENTINEL-KE v1.0</strong><br>
+    <strong>\u25a0 SENTINEL-KE v1.0</strong><br>
     AI-Powered Environmental Early Warning System for Western Kenya<br>
     <br>
     📊 Data updated: {format_eat_datetime(get_eat_time(), "%Y-%m-%d %H:%M:%S")} EAT<br>

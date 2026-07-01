@@ -19,10 +19,10 @@ def render_user_management_section(admin_session):
     """Render the user management section of the admin panel."""
     
     st.markdown("---")
-    st.subheader("👥 User Management")
+    st.subheader("▤ User Management")
     
     # Tab selection
-    tab1, tab2, tab3, tab4 = st.tabs(["📋 View Users", "➕ Create User", "✏️ Edit User", "🔒 Activate/Deactivate"])
+    tab1, tab2, tab3, tab4 = st.tabs(["≡ View Users", "+ Create User", "✎ Edit User", "🔐 Activate/Deactivate"])
     
     # ============================================
     # TAB 1: VIEW USERS
@@ -37,7 +37,7 @@ def render_user_management_section(admin_session):
             df = pd.DataFrame(user_list)
             st.dataframe(df, use_container_width=True, hide_index=True)
             
-            st.info(f"✅ Total users: {len(user_list)}")
+            st.info(f"✓ Total users: {len(user_list)}")
             
             # User statistics
             col1, col2, col3 = st.columns(3)
@@ -54,7 +54,7 @@ def render_user_management_section(admin_session):
                 viewers = len([u for u in user_list if u['Level'] == 1])
                 st.metric("Viewers", viewers)
         else:
-            st.warning("❌ Unable to fetch users")
+            st.warning("✗ Unable to fetch users")
     
     # ============================================
     # TAB 2: CREATE USER
@@ -95,21 +95,21 @@ def render_user_management_section(admin_session):
             - {', '.join([p.replace('_', ' ').title() for p in role_info['permissions']])}
             """)
         
-        if st.button("➕ Create User", use_container_width=True, key="btn_create_user", type="primary"):
+        if st.button("+ Create User", use_container_width=True, key="btn_create_user", type="primary"):
             # Validation
             if not new_username:
-                st.error("❌ Username cannot be empty")
+                st.error("✗ Username cannot be empty")
             elif not new_password:
-                st.error("❌ Password cannot be empty")
+                st.error("✗ Password cannot be empty")
             elif new_password != confirm_password:
-                st.error("❌ Passwords do not match")
+                st.error("✗ Passwords do not match")
             elif len(new_password) < 6:
-                st.error("❌ Password must be at least 6 characters")
+                st.error("✗ Password must be at least 6 characters")
             else:
                 # Check if user already exists
                 users = load_users()
                 if new_username in users:
-                    st.error(f"❌ User '{new_username}' already exists")
+                    st.error(f"✗ User '{new_username}' already exists")
                 else:
                     success, message = create_user(
                         new_username,
@@ -147,7 +147,7 @@ def render_user_management_section(admin_session):
                 
                 with col1:
                     st.write(f"**Current Role:** {user['role']}")
-                    st.write(f"**Current Status:** {'✅ Active' if user.get('active', True) else '❌ Inactive'}")
+                    st.write(f"**Current Status:** {'✓ Active' if user.get('active', True) else '✗ Inactive'}")
                     st.write(f"**Created:** {user.get('created_at', 'N/A')}")
                 
                 with col2:
@@ -176,7 +176,7 @@ def render_user_management_section(admin_session):
                     - {', '.join([p.replace('_', ' ').title() for p in new_role_info['permissions']])}
                     """)
                 
-                if st.button("✏️ Update User", use_container_width=True, key="btn_update_user", type="primary"):
+                if st.button("✎ Update User", use_container_width=True, key="btn_update_user", type="primary"):
                     success, message = update_user_role(
                         edit_username,
                         new_role,
@@ -255,7 +255,7 @@ def render_system_settings_section(admin_session):
     st.markdown("---")
     st.subheader("⚙️ System Settings")
     
-    tab1, tab2, tab3 = st.tabs(["📊 System Status", "🔐 Security", "📋 Audit Log"])
+    tab1, tab2, tab3 = st.tabs(["≡ System Status", "🔐 Security", "≡ Audit Log"])
     
     with tab1:
         st.markdown("### System Status")
@@ -270,7 +270,7 @@ def render_system_settings_section(admin_session):
             st.metric("Users Online", len(st.session_state.get("active_sessions", [])))
         
         st.info("""
-        ✅ **System Health:**
+        ✓ **System Health:**
         - Database: Connected
         - API: Operational
         - Reports: Enabled
@@ -291,7 +291,7 @@ def render_system_settings_section(admin_session):
             st.caption("Minimum password length and complexity requirements")
         
         st.warning("""
-        ⚠️ **Security Recommendations:**
+        ⚠ **Security Recommendations:**
         - Ensure all users have unique strong passwords
         - Regularly audit user access and permissions
         - Deactivate unused accounts immediately
@@ -302,7 +302,7 @@ def render_system_settings_section(admin_session):
         st.markdown("### Audit Log")
         
         st.info("""
-        📋 **Audit Capabilities:**
+        ≡ **Audit Capabilities:**
         - User creation and deletion
         - Role and permission changes
         - Account activation/deactivation
@@ -346,9 +346,9 @@ def render_admin_dashboard(admin_session):
             st.rerun()
     
     # Main sections
-    section = st.radio("Select Section", ["👥 User Management", "⚙️ System Settings"], horizontal=True)
+    section = st.radio("Select Section", ["▤ User Management", "⚙ System Settings"], horizontal=True)
     
-    if section == "👥 User Management":
+    if section == "▤ User Management":
         render_user_management_section(admin_session)
     else:
         render_system_settings_section(admin_session)
@@ -357,7 +357,7 @@ def render_admin_dashboard(admin_session):
     st.markdown("---")
     st.markdown(f"""
     <div style="text-align: center; padding: 1rem; color: #999; font-size: 0.85rem;">
-        <p><strong>🛡️ SENTINEL-KE Admin Panel</strong></p>
+        <p><strong>■ SENTINEL-KE Admin Panel</strong></p>
         <p>Last accessed: {format_eat_datetime(get_eat_time())}</p>
         <p>🔐 All actions are logged and monitored</p>
     </div>

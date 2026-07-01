@@ -134,11 +134,11 @@ def authenticate_user(username: str, password: str) -> Tuple[bool, Optional[Dict
     user = users[username]
     
     if not verify_password(password, user["password_hash"]):
-        return False, None, "❌ Invalid username or password"
+        return False, None, "✗ Invalid username or password"
     
     # Check if user is active
     if not user.get("active", True):
-        return False, None, "❌ Account is deactivated. Contact administrator."
+        return False, None, "✗ Account is deactivated. Contact administrator."
     
     return True, user, "✅ Login successful"
 
@@ -230,12 +230,12 @@ def create_user(username: str, password: str, role: str, role_level: int,
                 permissions: list, admin_session: Dict) -> Tuple[bool, str]:
     """Create a new user (admin only)."""
     if not can_manage_users(admin_session):
-        return False, "❌ Unauthorized: Only administrators can create users"
+        return False, "✗ Unauthorized: Only administrators can create users"
     
     users = load_users()
     
     if username in users:
-        return False, f"❌ User '{username}' already exists"
+        return False, f"✗ User '{username}' already exists"
     
     users[username] = {
         "password_hash": hash_password(password),
@@ -248,19 +248,19 @@ def create_user(username: str, password: str, role: str, role_level: int,
     }
     
     if save_users(users):
-        return True, f"✅ User '{username}' created successfully"
-    return False, "❌ Error saving user to database"
+        return True, f"✓ User '{username}' created successfully"
+    return False, "✗ Error saving user to database"
 
 def update_user_role(username: str, new_role: str, new_role_level: int, 
                      new_permissions: list, admin_session: Dict) -> Tuple[bool, str]:
     """Update a user's role and permissions (admin only)."""
     if not can_manage_users(admin_session):
-        return False, "❌ Unauthorized: Only administrators can update users"
+        return False, "✗ Unauthorized: Only administrators can update users"
     
     users = load_users()
     
     if username not in users:
-        return False, f"❌ User '{username}' not found"
+        return False, f"✗ User '{username}' not found"
     
     users[username]["role"] = new_role
     users[username]["role_level"] = new_role_level
@@ -269,27 +269,27 @@ def update_user_role(username: str, new_role: str, new_role_level: int,
     users[username]["updated_by"] = admin_session["username"]
     
     if save_users(users):
-        return True, f"✅ User '{username}' updated successfully"
-    return False, "❌ Error updating user in database"
+        return True, f"✓ User '{username}' updated successfully"
+    return False, "✗ Error updating user in database"
 
 def delete_user(username: str, admin_session: Dict) -> Tuple[bool, str]:
     """Delete a user (admin only)."""
     if not can_manage_users(admin_session):
-        return False, "❌ Unauthorized: Only administrators can delete users"
+        return False, "✗ Unauthorized: Only administrators can delete users"
     
     if username == admin_session["username"]:
-        return False, "❌ Cannot delete your own account"
+        return False, "✗ Cannot delete your own account"
     
     users = load_users()
     
     if username not in users:
-        return False, f"❌ User '{username}' not found"
+        return False, f"✗ User '{username}' not found"
     
     del users[username]
     
     if save_users(users):
-        return True, f"✅ User '{username}' deleted successfully"
-    return False, "❌ Error deleting user from database"
+        return True, f"✓ User '{username}' deleted successfully"
+    return False, "✗ Error deleting user from database"
 
 def list_users(admin_session: Dict) -> Tuple[bool, list]:
     """List all users (admin only)."""
@@ -304,7 +304,7 @@ def list_users(admin_session: Dict) -> Tuple[bool, list]:
             "Username": username,
             "Role": user_info["role"],
             "Level": user_info["role_level"],
-            "Status": "✅ Active" if user_info.get("active", True) else "❌ Inactive",
+            "Status": "✓ Active" if user_info.get("active", True) else "✗ Inactive",
             "Permissions": ", ".join(user_info["permissions"]),
             "Created": user_info.get("created_at", "N/A")[:10]
         })
@@ -315,10 +315,10 @@ def list_users(admin_session: Dict) -> Tuple[bool, list]:
 def deactivate_user(username: str, admin_session: Dict) -> Tuple[bool, str]:
     """Deactivate a user account (admin only)."""
     if not can_manage_users(admin_session):
-        return False, "❌ Unauthorized: Only administrators can deactivate users"
+        return False, "✗ Unauthorized: Only administrators can deactivate users"
     
     if username == admin_session["username"]:
-        return False, "❌ Cannot deactivate your own account"
+        return False, "✗ Cannot deactivate your own account"
     
     users = load_users()
     
@@ -330,33 +330,33 @@ def deactivate_user(username: str, admin_session: Dict) -> Tuple[bool, str]:
     users[username]["deactivated_by"] = admin_session["username"]
     
     if save_users(users):
-        return True, f"✅ User '{username}' has been deactivated"
-    return False, "❌ Error deactivating user"
+        return True, f"✓ User '{username}' has been deactivated"
+    return False, "✗ Error deactivating user"
 
 def activate_user(username: str, admin_session: Dict) -> Tuple[bool, str]:
     """Activate a deactivated user account (admin only)."""
     if not can_manage_users(admin_session):
-        return False, "❌ Unauthorized: Only administrators can activate users"
+        return False, "✗ Unauthorized: Only administrators can activate users"
     
     users = load_users()
     
     if username not in users:
-        return False, f"❌ User '{username}' not found"
+        return False, f"✗ User '{username}' not found"
     
     users[username]["active"] = True
     users[username]["reactivated_at"] = format_eat_datetime(get_eat_time())
     users[username]["reactivated_by"] = admin_session["username"]
     
     if save_users(users):
-        return True, f"✅ User '{username}' has been activated"
-    return False, "❌ Error activating user"
+        return True, f"✓ User '{username}' has been activated"
+    return False, "✗ Error activating user"
 
 
 def get_role_badge(role_level: int, role_name: str) -> str:
-    """Return emoji badge for role display."""
+    """Return icon badge for role display."""
     badges = {
-        3: f"👑 {role_name}",
-        2: f"📊 {role_name}",
-        1: f"👁️ {role_name}"
+        3: f"★ {role_name}",
+        2: f"◆ {role_name}",
+        1: f"● {role_name}"
     }
-    return badges.get(role_level, f"❓ {role_name}")
+    return badges.get(role_level, f"◯ {role_name}")

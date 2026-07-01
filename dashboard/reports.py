@@ -27,7 +27,7 @@ from auth import get_eat_time, format_eat_datetime
 def create_header_table(title, subtitle, user_role):
     """Create a styled header table for the report."""
     header_data = [
-        ["🛡️ SENTINEL-KE", f"User Role: {user_role}"],
+        ["■ SENTINEL-KE", f"User Role: {user_role}"],
         [title, f"Generated: {format_eat_datetime(get_eat_time(), '%Y-%m-%d %H:%M:%S')} EAT"],
         [subtitle, ""]
     ]
@@ -52,11 +52,11 @@ def create_header_table(title, subtitle, user_role):
 def get_risk_color_name(risk_score):
     """Get risk level name based on score."""
     if risk_score > 0.7:
-        return "🚨 CRITICAL", "HIGH RISK"
+        return "▲▲ CRITICAL", "HIGH RISK"
     elif risk_score > 0.4:
-        return "⚠️ MODERATE", "MODERATE RISK"
+        return "▲ MODERATE", "MODERATE RISK"
     else:
-        return "✅ LOW", "LOW RISK"
+        return "✓ LOW", "LOW RISK"
 
 def format_percentage(value):
     """Format a value as percentage string."""
@@ -142,7 +142,7 @@ def generate_outbreak_risk_report(df_predictions, df_historical, selected_county
     summary_data = [
         ["Metric", "Value", "Status"],
         ["Risk Score", format_percentage(risk_score), risk_emoji],
-        ["Alert Status", "🚨 ALERT" if alert_status else "✅ NORMAL", "Active" if alert_status else "Normal"],
+        ["▤ Alert Status", "▲▲ ALERT" if alert_status else "✓ NORMAL", "Active" if alert_status else "Normal"],
         ["Assessment Date", format_eat_datetime(get_eat_time(), "%Y-%m-%d"), "Current"],
         ["Risk Level", risk_level, "Classified"],
     ]
@@ -173,7 +173,7 @@ def generate_outbreak_risk_report(df_predictions, df_historical, selected_county
     has_domains = all(col in df_predictions.columns for col in domain_columns)
     
     if has_domains:
-        elements.append(Paragraph(f"📊 Multi-Domain Risk Breakdown", section_style))
+        elements.append(Paragraph(f"≡ Multi-Domain Risk Breakdown", section_style))
         
         domain_data = [
             ["Domain", "Risk Score", "Assessment"],
@@ -187,7 +187,7 @@ def generate_outbreak_risk_report(df_predictions, df_historical, selected_county
              "High" if county_data['mobility_risk'].iloc[0] > 0.5 else "Moderate" if county_data['mobility_risk'].iloc[0] > 0.3 else "Low"],
             ["🏥 Health Capacity Risk", format_percentage(county_data['capacity_risk'].iloc[0]), 
              "High" if county_data['capacity_risk'].iloc[0] > 0.5 else "Moderate" if county_data['capacity_risk'].iloc[0] > 0.3 else "Low"],
-            ["📊 Data Quality", format_percentage(county_data['data_quality_score'].iloc[0]), 
+            ["≡ Data Quality", format_percentage(county_data['data_quality_score'].iloc[0]), 
              "Excellent" if county_data['data_quality_score'].iloc[0] > 0.8 else "Good" if county_data['data_quality_score'].iloc[0] > 0.6 else "Fair"],
         ]
         
@@ -224,13 +224,13 @@ def generate_outbreak_risk_report(df_predictions, df_historical, selected_county
         """
     elif risk_score > 0.4:
         analysis_text = f"""
-        <b>STATUS: ⚠️ MODERATE RISK</b><br/>
+        <b>STATUS: ▲ MODERATE RISK</b><br/>
         The AI model has detected moderate risk conditions in {selected_county} County.
         Enhanced surveillance and preparedness are recommended.
         """
     else:
         analysis_text = f"""
-        <b>STATUS: ✅ LOW RISK</b><br/>
+        <b>STATUS: ✓ LOW RISK</b><br/>
         Current conditions in {selected_county} County show low outbreak risk.
         Routine surveillance protocols should continue.
         """
@@ -261,7 +261,7 @@ def generate_outbreak_risk_report(df_predictions, df_historical, selected_county
         county_hist = df_historical[df_historical['county'] == selected_county]
         
         if not county_hist.empty:
-            elements.append(Paragraph(f"📈 Historical Trends (Last 30 Days)", section_style))
+            elements.append(Paragraph(f"▲ Historical Trends (Last 30 Days)", section_style))
             
             recent_data = county_hist.tail(30)
             
@@ -270,15 +270,15 @@ def generate_outbreak_risk_report(df_predictions, df_historical, selected_county
                 ["Cholera Cases", 
                  f"{recent_data['cholera_cases'].tail(7).mean():.0f}",
                  f"{recent_data['cholera_cases'].iloc[:-7].tail(7).mean():.0f}",
-                 "📈 Rising" if recent_data['cholera_cases'].tail(7).mean() > recent_data['cholera_cases'].iloc[:-7].tail(7).mean() else "📉 Falling"],
+                 "▲ Rising" if recent_data['cholera_cases'].tail(7).mean() > recent_data['cholera_cases'].iloc[:-7].tail(7).mean() else "▼ Falling"],
                 ["Malaria Cases", 
                  f"{recent_data['malaria_cases'].tail(7).mean():.0f}",
                  f"{recent_data['malaria_cases'].iloc[:-7].tail(7).mean():.0f}",
-                 "📈 Rising" if recent_data['malaria_cases'].tail(7).mean() > recent_data['malaria_cases'].iloc[:-7].tail(7).mean() else "📉 Falling"],
+                 "▲ Rising" if recent_data['malaria_cases'].tail(7).mean() > recent_data['malaria_cases'].iloc[:-7].tail(7).mean() else "▼ Falling"],
                 ["Rainfall (mm)", 
                  f"{recent_data['rainfall_mm'].tail(7).mean():.1f}",
                  f"{recent_data['rainfall_mm'].iloc[:-7].tail(7).mean():.1f}",
-                 "📈 Increasing" if recent_data['rainfall_mm'].tail(7).mean() > recent_data['rainfall_mm'].iloc[:-7].tail(7).mean() else "📉 Decreasing"],
+                 "▲ Increasing" if recent_data['rainfall_mm'].tail(7).mean() > recent_data['rainfall_mm'].iloc[:-7].tail(7).mean() else "▼ Decreasing"],
             ]
             
             trends_table = Table(trends_data, colWidths=[1.8*inch, 1.7*inch, 1.7*inch, 1.8*inch])
@@ -447,7 +447,7 @@ def generate_summary_report(df_predictions, selected_county, user_role):
     
     quick_data = [
         ["Risk Score", format_percentage(risk_score), ""],
-        ["Status", "🚨 ALERT" if alert_status else "✅ NORMAL", ""],
+        ["▤ Status", "▲▲ ALERT" if alert_status else "✓ NORMAL", ""],
         ["Date", format_eat_datetime(get_eat_time(), "%Y-%m-%d"), ""],
     ]
     
@@ -468,11 +468,11 @@ def generate_summary_report(df_predictions, selected_county, user_role):
     elements.append(Paragraph(f"Recommendation", section_style))
     
     if alert_status:
-        recommendation = "🚨 <b>CRITICAL:</b> Immediate action required. Activate emergency response protocols."
+        recommendation = "▲▲ <b>CRITICAL:</b> Immediate action required. Activate emergency response protocols."
     elif risk_score > 0.4:
-        recommendation = "⚠️ <b>MODERATE:</b> Enhanced surveillance recommended. Prepare response resources."
+        recommendation = "▲ <b>MODERATE:</b> Enhanced surveillance recommended. Prepare response resources."
     else:
-        recommendation = "✅ <b>LOW RISK:</b> Continue routine surveillance. Monitor for changes."
+        recommendation = "✓ <b>LOW RISK:</b> Continue routine surveillance. Monitor for changes."
     
     elements.append(Paragraph(recommendation, styles['BodyText']))
     elements.append(Spacer(1, 0.15*inch))
@@ -542,7 +542,7 @@ def generate_comparative_report(df_predictions, user_role):
         comparison_data.append([
             row['county'],
             format_percentage(row['risk_score']),
-            "🚨 ALERT" if row['alert'] else "✅ OK",
+            "▲▲ ALERT" if row['alert'] else "✓ OK",
             format_percentage(row.get('rainfall_risk', 0)),
             format_percentage(row.get('wash_risk', 0)),
             format_percentage(row.get('capacity_risk', 0)),
