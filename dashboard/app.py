@@ -166,7 +166,7 @@ elif st.session_state.show_admin_panel and not can_manage_users(st.session_state
 
 st.set_page_config(
     page_title="SENTINEL-KE | Early Warning System",
-    page_icon="■",
+    page_icon="🛰️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
