@@ -15,6 +15,12 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT, TA_JUSTIFY
 import numpy as np
 
 # ============================================
+# IMPORT TIMEZONE FUNCTIONS
+# ============================================
+
+from auth import get_eat_time, format_eat_datetime
+
+# ============================================
 # UTILITY FUNCTIONS
 # ============================================
 
@@ -22,7 +28,7 @@ def create_header_table(title, subtitle, user_role):
     """Create a styled header table for the report."""
     header_data = [
         ["🛡️ SENTINEL-KE", f"User Role: {user_role}"],
-        [title, f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"],
+        [title, f"Generated: {format_eat_datetime(get_eat_time(), '%Y-%m-%d %H:%M:%S')} EAT"],
         [subtitle, ""]
     ]
     
@@ -137,7 +143,7 @@ def generate_outbreak_risk_report(df_predictions, df_historical, selected_county
         ["Metric", "Value", "Status"],
         ["Risk Score", format_percentage(risk_score), risk_emoji],
         ["Alert Status", "🚨 ALERT" if alert_status else "✅ NORMAL", "Active" if alert_status else "Normal"],
-        ["Assessment Date", datetime.now().strftime("%Y-%m-%d"), "Current"],
+        ["Assessment Date", format_eat_datetime(get_eat_time(), "%Y-%m-%d"), "Current"],
         ["Risk Level", risk_level, "Classified"],
     ]
     
@@ -350,7 +356,7 @@ def generate_outbreak_risk_report(df_predictions, df_historical, selected_county
     • Training Data: Historical disease and environmental data<br/>
     • Accuracy: Cross-validated on held-out test set<br/>
     • Data Quality Score: {format_percentage(county_data['data_quality_score'].iloc[0])}<br/>
-    • Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}<br/>
+    • Last Updated: {format_eat_datetime(get_eat_time(), '%Y-%m-%d %H:%M:%S')} EAT<br/>
     <br/>
     <b>Data Sources:</b><br/>
     • Rainfall: Open-Meteo API<br/>
@@ -373,7 +379,7 @@ def generate_outbreak_risk_report(df_predictions, df_historical, selected_county
     data and should be used in conjunction with case investigation and laboratory confirmation. For questions or to report issues, 
     contact the SENTINEL-KE project team.<br/>
     <br/>
-    Report Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | User Role: {user_role}
+    Report Generated: {format_eat_datetime(get_eat_time(), '%Y-%m-%d %H:%M:%S')} EAT | User Role: {user_role}
     """
     
     elements.append(Spacer(1, 0.3*inch))
@@ -442,7 +448,7 @@ def generate_summary_report(df_predictions, selected_county, user_role):
     quick_data = [
         ["Risk Score", format_percentage(risk_score), ""],
         ["Status", "🚨 ALERT" if alert_status else "✅ NORMAL", ""],
-        ["Date", datetime.now().strftime("%Y-%m-%d"), ""],
+        ["Date", format_eat_datetime(get_eat_time(), "%Y-%m-%d"), ""],
     ]
     
     quick_table = Table(quick_data, colWidths=[2*inch, 2*inch, 2*inch])
