@@ -6,8 +6,39 @@ Implements role-based access control with session management and password hashin
 import hashlib
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Tuple
+import pytz
+
+# ============================================
+# TIMEZONE CONFIGURATION
+# ============================================
+
+# East Africa Time (EAT) timezone
+EAT = pytz.timezone('Africa/Nairobi')
+
+def get_eat_time() -> datetime:
+    """Get current time in East Africa Time (EAT)."""
+    return datetime.now(EAT)
+
+def format_eat_datetime(dt: datetime = None, format_str: str = "%Y-%m-%d %H:%M:%S") -> str:
+    """Format datetime in EAT timezone."""
+    if dt is None:
+        dt = get_eat_time()
+    elif isinstance(dt, str):
+        # If it's a string in ISO format, parse it
+        try:
+            dt = datetime.fromisoformat(dt)
+        except:
+            return dt
+    
+    # Convert to EAT if not already
+    if dt.tzinfo is None:
+        dt = EAT.localize(dt)
+    else:
+        dt = dt.astimezone(EAT)
+    
+    return dt.strftime(format_str)
 
 # ============================================
 # USER DATABASE & CONFIGURATION
@@ -21,21 +52,24 @@ DEFAULT_USERS = {
         "role": "Administrator",
         "role_level": 3,
         "permissions": ["view", "export", "user_management", "system_admin"],
-        "created_at": datetime.now().isoformat()
+        "active": True,
+        "created_at": format_eat_datetime(get_eat_time())
     },
     "health_officer": {
         "password_hash": hashlib.sha256("password".encode()).hexdigest(),
         "role": "Health Officer",
         "role_level": 2,
         "permissions": ["view", "export", "report_generation"],
-        "created_at": datetime.now().isoformat()
+        "active": True,
+        "created_at": format_eat_datetime(get_eat_time())
     },
     "viewer": {
         "password_hash": hashlib.sha256("viewer".encode()).hexdigest(),
         "role": "Viewer",
         "role_level": 1,
         "permissions": ["view"],
-        "created_at": datetime.now().isoformat()
+        "active": True,
+        "created_at": format_eat_datetime(get_eat_time())
     }
 }
 
@@ -79,7 +113,7 @@ def hash_update_password(username: str, new_password: str) -> bool:
     users = load_users()
     if username in users:
         users[username]["password_hash"] = hash_password(new_password)
-        users[username]["updated_at"] = datetime.now().isoformat()
+        users[username]["updated_at"] = format_eat_datetime(get_eat_time())
         return save_users(users)
     return False
 
@@ -102,17 +136,22 @@ def authenticate_user(username: str, password: str) -> Tuple[bool, Optional[Dict
     if not verify_password(password, user["password_hash"]):
         return False, None, "❌ Invalid username or password"
     
+    # Check if user is active
+    if not user.get("active", True):
+        return False, None, "❌ Account is deactivated. Contact administrator."
+    
     return True, user, "✅ Login successful"
 
 def create_session(username: str, user_info: Dict) -> Dict:
     """Create a new session for an authenticated user."""
+    now = get_eat_time()
     return {
         "username": username,
         "role": user_info["role"],
         "role_level": user_info["role_level"],
         "permissions": user_info["permissions"],
-        "login_time": datetime.now(),
-        "last_activity": datetime.now(),
+        "login_time": now,
+        "last_activity": now,
         "authenticated": True
     }
 
@@ -125,13 +164,13 @@ def is_session_valid(session: Optional[Dict]) -> bool:
     if not last_activity:
         return False
     
-    timeout = datetime.now() - timedelta(minutes=SESSION_TIMEOUT_MINUTES)
+    timeout = get_eat_time() - timedelta(minutes=SESSION_TIMEOUT_MINUTES)
     return last_activity > timeout
 
 def update_session_activity(session: Dict) -> Dict:
     """Update the last activity timestamp of a session."""
     if session:
-        session["last_activity"] = datetime.now()
+        session["last_activity"] = get_eat_time()
     return session
 
 def get_session_time_remaining(session: Dict) -> int:
@@ -143,7 +182,7 @@ def get_session_time_remaining(session: Dict) -> int:
     if not last_activity:
         return 0
     
-    elapsed = (datetime.now() - last_activity).total_seconds() / 60
+    elapsed = (get_eat_time() - last_activity).total_seconds() / 60
     remaining = SESSION_TIMEOUT_MINUTES - elapsed
     return max(0, int(remaining))
 
@@ -203,7 +242,8 @@ def create_user(username: str, password: str, role: str, role_level: int,
         "role": role,
         "role_level": role_level,
         "permissions": permissions,
-        "created_at": datetime.now().isoformat(),
+        "active": True,
+        "created_at": format_eat_datetime(get_eat_time()),
         "created_by": admin_session["username"]
     }
     
@@ -225,7 +265,7 @@ def update_user_role(username: str, new_role: str, new_role_level: int,
     users[username]["role"] = new_role
     users[username]["role_level"] = new_role_level
     users[username]["permissions"] = new_permissions
-    users[username]["updated_at"] = datetime.now().isoformat()
+    users[username]["updated_at"] = format_eat_datetime(get_eat_time())
     users[username]["updated_by"] = admin_session["username"]
     
     if save_users(users):
@@ -264,11 +304,52 @@ def list_users(admin_session: Dict) -> Tuple[bool, list]:
             "Username": username,
             "Role": user_info["role"],
             "Level": user_info["role_level"],
+            "Status": "✅ Active" if user_info.get("active", True) else "❌ Inactive",
             "Permissions": ", ".join(user_info["permissions"]),
             "Created": user_info.get("created_at", "N/A")[:10]
         })
     
     return True, user_list
+
+
+def deactivate_user(username: str, admin_session: Dict) -> Tuple[bool, str]:
+    """Deactivate a user account (admin only)."""
+    if not can_manage_users(admin_session):
+        return False, "❌ Unauthorized: Only administrators can deactivate users"
+    
+    if username == admin_session["username"]:
+        return False, "❌ Cannot deactivate your own account"
+    
+    users = load_users()
+    
+    if username not in users:
+        return False, f"❌ User '{username}' not found"
+    
+    users[username]["active"] = False
+    users[username]["deactivated_at"] = format_eat_datetime(get_eat_time())
+    users[username]["deactivated_by"] = admin_session["username"]
+    
+    if save_users(users):
+        return True, f"✅ User '{username}' has been deactivated"
+    return False, "❌ Error deactivating user"
+
+def activate_user(username: str, admin_session: Dict) -> Tuple[bool, str]:
+    """Activate a deactivated user account (admin only)."""
+    if not can_manage_users(admin_session):
+        return False, "❌ Unauthorized: Only administrators can activate users"
+    
+    users = load_users()
+    
+    if username not in users:
+        return False, f"❌ User '{username}' not found"
+    
+    users[username]["active"] = True
+    users[username]["reactivated_at"] = format_eat_datetime(get_eat_time())
+    users[username]["reactivated_by"] = admin_session["username"]
+    
+    if save_users(users):
+        return True, f"✅ User '{username}' has been activated"
+    return False, "❌ Error activating user"
 
 
 def get_role_badge(role_level: int, role_name: str) -> str:

@@ -9,3 +9,4 @@ joblib>=1.2.0
 reportlab>=4.0.0
 pypdf>=3.17.0
 Pillow>=9.5.0
+pytz>=2023.3

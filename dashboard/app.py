@@ -23,7 +23,8 @@ from auth import (
     update_session_activity, get_session_time_remaining,
     has_permission, can_export_data, can_generate_reports, 
     can_manage_users, can_access_system_admin, 
-    get_role_badge, list_users, create_user, update_user_role, delete_user
+    get_role_badge, list_users, create_user, update_user_role, delete_user,
+    format_eat_datetime, get_eat_time, EAT
 )
 
 # ============================================
@@ -36,6 +37,12 @@ from reports import (
     generate_comparative_report
 )
 
+# ============================================
+# ADMIN PANEL
+# ============================================
+
+from admin_panel import render_admin_dashboard
+
 # Initialize session state if not already done
 if "session" not in st.session_state:
     st.session_state.session = None
@@ -43,6 +50,8 @@ if "login_error" not in st.session_state:
     st.session_state.login_error = ""
 if "show_login" not in st.session_state:
     st.session_state.show_login = True
+if "show_admin_panel" not in st.session_state:
+    st.session_state.show_admin_panel = False
 
 # ============================================
 # AUTHENTICATION HANDLER
@@ -105,6 +114,8 @@ def render_logout_and_session_info():
                 st.write(f"**User:** {session['username']}")
                 st.write(f"**Role:** {badge}")
             
+            st.caption(f"🕐 **Time (EAT):** {format_eat_datetime(get_eat_time(), '%H:%M:%S')}")
+            
             time_remaining = get_session_time_remaining(session)
             if time_remaining > 0:
                 st.caption(f"⏱️ Session expires in: {time_remaining} min")
@@ -114,6 +125,15 @@ def render_logout_and_session_info():
                 st.session_state.show_login = True
                 st.rerun()
             
+            # Admin panel button
+            if can_manage_users(session):
+                st.markdown("---")
+                st.markdown("### ⚙️ Administration")
+                if st.button("👨‍💼 Admin Panel", use_container_width=True, type="primary", key="btn_admin_panel"):
+                    st.session_state.show_admin_panel = True
+                    st.rerun()
+            
+            st.markdown("---")
             if st.button("🚪 Logout", use_container_width=True):
                 st.session_state.session = None
                 st.session_state.show_login = True
@@ -127,6 +147,18 @@ if st.session_state.show_login or not is_session_valid(st.session_state.session)
 
 # Update session activity
 st.session_state.session = update_session_activity(st.session_state.session)
+
+# ============================================
+# ADMIN PANEL NAVIGATION
+# ============================================
+
+if st.session_state.show_admin_panel and can_manage_users(st.session_state.session):
+    render_admin_dashboard(st.session_state.session)
+    st.stop()
+elif st.session_state.show_admin_panel and not can_manage_users(st.session_state.session):
+    st.error("❌ Unauthorized: You do not have permission to access the admin panel")
+    st.session_state.show_admin_panel = False
+    st.rerun()
 
 # ============================================
 # PAGE CONFIG
@@ -217,7 +249,7 @@ with st.sidebar:
     
     disease = st.radio("Select Disease", ['Cholera', 'Malaria', 'Both'], index=2)
     
-    today = datetime.now()
+    today = get_eat_time().date()
     start_date = st.date_input("Start Date", value=today - timedelta(days=30), max_value=today)
     end_date = st.date_input("End Date", value=today, max_value=today)
     
@@ -600,7 +632,7 @@ if can_generate_reports(session) or can_manage_users(session):
                         st.download_button(
                             label="📥 Download PDF",
                             data=pdf_buffer,
-                            file_name=f"SENTINEL-KE_Comprehensive_{selected_county}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                            file_name=f"SENTINEL-KE_Comprehensive_{selected_county}_{format_eat_datetime(get_eat_time(), '%Y%m%d_%H%M%S')}.pdf",
                             mime="application/pdf",
                             use_container_width=True,
                             key="download_comp"
@@ -623,7 +655,7 @@ if can_generate_reports(session) or can_manage_users(session):
                         st.download_button(
                             label="📥 Download PDF",
                             data=pdf_buffer,
-                            file_name=f"SENTINEL-KE_Summary_{selected_county}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                            file_name=f"SENTINEL-KE_Summary_{selected_county}_{format_eat_datetime(get_eat_time(), '%Y%m%d_%H%M%S')}.pdf",
                             mime="application/pdf",
                             use_container_width=True,
                             key="download_summary"
@@ -645,7 +677,7 @@ if can_generate_reports(session) or can_manage_users(session):
                         st.download_button(
                             label="📥 Download PDF",
                             data=pdf_buffer,
-                            file_name=f"SENTINEL-KE_Comparison_AllCounties_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                            file_name=f"SENTINEL-KE_Comparison_AllCounties_{format_eat_datetime(get_eat_time(), '%Y%m%d_%H%M%S')}.pdf",
                             mime="application/pdf",
                             use_container_width=True,
                             key="download_comp_counties"
@@ -803,7 +835,7 @@ st.markdown(f'''
     <strong>🛡️ SENTINEL-KE v1.0</strong><br>
     AI-Powered Environmental Early Warning System for Western Kenya<br>
     <br>
-    📊 Data updated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} EAT<br>
+    📊 Data updated: {format_eat_datetime(get_eat_time(), "%Y-%m-%d %H:%M:%S")} EAT<br>
     🔄 Next update: Daily at 6:00 AM EAT<br>
     <br>
     📌 <strong>Data Sources:</strong> Open-Meteo API, CHIRPS, WorldPop<br>
