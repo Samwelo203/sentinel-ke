@@ -402,7 +402,7 @@ if has_domains and not county_data.empty:
     st.plotly_chart(fig, use_container_width=True)
     
     # Domain explanations
-    with st.expander("🔍 Click to see detailed domain explanations"):
+    with st.expander(" Click to see detailed domain explanations"):
         col1, col2 = st.columns(2)
         
         with col1:
